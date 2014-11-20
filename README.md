@@ -4,7 +4,6 @@ Personal Light Streaming
   
 Development of a personal web music streaming plateform.  
 It has to be light enough to run on a Raspberry Pi with a web server (preferably Apache, and if too heavy, nginx).  
-A preview is available [here][preview].
   
  * * *  
   
@@ -28,4 +27,3 @@ Used add-ons
 [bs]: http://getbootstrap.com/
 [jq]: http://jquery.com/
 [sm2]: http://www.schillmania.com/projects/soundmanager2/
-[preview]: http://pls.qreon.ninja/
