@@ -20,7 +20,7 @@
 	<link href="css/bootstrap.css" rel="stylesheet">
 
 	<!-- Custom CSS -->
-	<link href="css/sb-admin.css" rel="stylesheet">
+	<link href="sb-admin.css" rel="stylesheet">
 
 	<!-- Morris Charts CSS -->
 	<link href="css/plugins/morris.css" rel="stylesheet">
@@ -35,57 +35,9 @@
 		<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 	<![endif]-->
 
-	<script type="text/javascript">
-		//soundManager.url = 'swf/';
-		soundManager.debugMode = true;
-
-		var CatchMe;
-		soundManager.onload = function()
-		{
-			CatchMe = soundManager.createSound(
-				{
-					id : "Catch me",
-					url : "coucou.mp3",
-					onload : function() {
-					  document.getElementById("loading").innerHTML = "Chargement terminé !";
-					}
-				}
-			);
-
-			CatchMe.setPan(-100);
-			CatchMe.play();
-			CatchMe.setPan(-100);
-		}
-	</script>
-
-	<script type="text/javascript">
-		//AJAX
-		function reloadFolderStructure(str)
-		{
-			var xmlhttp;
-			if (window.XMLHttpRequest)
-			{// code for IE7+, Firefox, Chrome, Opera, Safari
-				xmlhttp = new XMLHttpRequest();
-			}
-			else
-			{// code for IE6, IE5
-				xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-			}
-
-			xmlhttp.onreadystatechange = function() {
-				if ((xmlhttp.readyState == 4) && (xmlhttp.status == 200))
-				{
-					document.getElementById("folder-list").innerHTML = xmlhttp.responseText;
-				}
-			}
-
-			xmlhttp.open("POST","folderListing.php",true);
-			xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-			xmlhttp.send("folder=" + str);
-		}
-	</script>
-	<script type="text/javascript" src="jquery.js"></script>
-
+	<script type="text/javascript" src="js/jquery-1.11.0.js"></script>
+	<script type="text/javascript" src="script/soundmanager2.js"></script>
+	<script type="text/javascript" src="controls.js"></script>
 </head>
 
 <body>
@@ -194,7 +146,7 @@
 						<div class="panel-body">
 							<div class="list-group" id="folder-list">
 								<?php
-									echo(getFolderStructure($musicDir.'Carlos/'));
+									echo(getFolderStructure($musicDir, true));
 								?>
 							</div>
 
@@ -210,9 +162,9 @@
 			</div>
 			<!-- /.container-fluid -->
 
-			<div class="navbar navbar-inverse navbar-fixed-bottom" role="navigation" style="-moz-box-shadow: 0px 0px 15px 1px #343434;-webkit-box-shadow: 0px 0px 15px 1px #343434;-o-box-shadow: 0px 0px 15px 1px #343434;box-shadow: 0px 0px 15px 1px #343434;filter:progid:DXImageTransform.Microsoft.Shadow(color=#343434, Direction=315, Strength=15);">
+			<div id="botnav" class="navbar navbar-inverse navbar-fixed-bottom" role="navigation" style="-moz-box-shadow: 0px 0px 15px 1px #343434;-webkit-box-shadow: 0px 0px 15px 1px #343434;-o-box-shadow: 0px 0px 15px 1px #343434;box-shadow: 0px 0px 15px 1px #343434;filter:progid:DXImageTransform.Microsoft.Shadow(color=#343434, Direction=315, Strength=15);">
 				<div class="container">
-
+					<!--
 					<div class="navbar-header">
 						<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
 							<span class="sr-only">Toggle navigation</span>
@@ -223,43 +175,109 @@
 
 						<ul class="nav navbar-nav navbar-left">
 							<li>
-								<a class="navbar-brand" href="#">NomDeLaMusique </br> NomAuteur </br> Album</a>
+								<a class="navbar-brand" id="musicInfo" href="#">NomDeLaMusique </br> NomAuteur </br> Album</a>
 							</li>
 						</ul>
 
 					</div>
-
-					<div class="navbar-collapse collapse">
-						<ul class="nav navbar-nav">
+					-->
+					<div class="navbar-header">
+						<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#botnavcol">
+							<span class="sr-only">Toggle navigation</span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+					 	</button>
+					</div>
+					<div class="collapse navbar-collapse" id="botnavcol">
+						<ul class="nav navbar-nav" id="botnavcont">
 							<li>
-								<div class="col-lg-12" style="padding-top:10px; margin:auto;">
-									<button class="btn btn-lg btn-default" onclick="CatchMe.play();"><i class="fa fa-play"></i></button>
-									<button class="btn btn-lg btn-default" onclick="CatchMe.pause();"><i class="fa fa-pause"></i></button>
-									<button class="btn btn-lg btn-default" onclick="CatchMe.mute();"><i class="fa fa-volume-off"></i></button>
-									<button class="btn btn-lg btn-default" onclick="CatchMe.unmute();"><i class="fa fa-volume-up"></i></button>
-									<button class="btn btn-primary"><i class="fa fa-share"></i></button>
+								<span class="navbar-brand" id="musicInfo">NomDeLaMusique</span>
+								<div style="padding-top:10px; margin:auto;" id="player">
+									<div id="buttons">
+										<span id="playDiv">
+											<button class="btn btn-lg btn-default disabled" onclick="play();" id="playBtn"><i class="fa fa-play"></i></button>
+										</span>
+										<span id="volDiv">
+											<button class="btn btn-lg btn-default disabled" onclick="mute();" id="muteBtn"><i class="fa fa-volume-up"></i></button>
+										</span>
+										<span id="shrDiv">
+											<div class="btn-group dropup" role="group" id="shrGroup">
+												<button type="button" class="btn btn-default btn-primary dropdown-toggle" id="shrToggle" data-toggle="dropdown" aria-expanded="false">
+													<i class="fa fa-share"></i>&nbsp;&nbsp;
+													<span class="caret"></span>
+												</button>
+												<ul class="dropdown-menu" id="shrDropup" role="menu">
+													<li class="disabled" id="shrMusic"><a href="#">Partager la musique</a></li>
+													<?php
+														echo("<li id=\"shrFolder\" onclick=\"share('". $musicDir . "');\"><a href=\"#\">Partager le dossier</a></li>");
+													?>
+												</ul>
+											</div>
+										</span>
 
-									<div class="btn-group dropup">
-										<button class="btn btn-success"><i class="fa fa-plus"></i></button>
-										<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-											<span class="caret"></span>
-											<span class="sr-only">Toggle Dropdown</span>
-										</button>
-										<ul class="dropdown-menu" role="menu">
-											<li><a href="#">NomPlaylist1 <i class="fa fa-square-o"></i></a></li>
-											<li><a href="#">NomPlaylist2 <i class="fa fa-square-o"></i></a></li>
-										</ul>
+										<div class="btn-group dropup" id="plBtn">
+											<button class="btn btn-success"><i class="fa fa-plus"></i></button>
+											<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+												<span class="caret"></span>
+												<span class="sr-only">Toggle Dropdown</span>
+											</button>
+											<ul class="dropdown-menu" role="menu">
+												<li><a href="#">NomPlaylist1 <i class="fa fa-square-o"></i></a></li>
+												<li><a href="#">NomPlaylist2 <i class="fa fa-square-o"></i></a></li>
+											</ul>
+										</div>
+
+										<button class="btn btn-warning" id="favBtn"><i class="fa fa-star"></i></button>
+										<span id="dlDiv">
+											<a class="btn btn-danger disabled" id="dlBtn"><i class="fa fa-download"></i></a>
+										</span>
 									</div>
-
-									<button class="btn btn-warning"><i class="fa fa-star"></i></button>
-									<button class="btn btn-danger"><i class="fa fa-download"></i></button>
-									<input id="time" type="range" value="0" min="0" max="300">
-									<p style="color:white;">00:00/00:00</p>
+									<div id="timeCtl">
+										<span id="timeRange"><input id="time" type="range" min="0" max="1000" step="1" value="0" onmousedown="rangePressed()" onmouseup="rangeReleased()"/></span>
+										<span style="color:white;" id="timeCpt">00:00 / 00:00</span>
+									</div>
 								</div>
 							</li>
+							<li id="shrLink">
+							</li>
 						</ul>
 					</div>
-					<!--/.nav-collapse -->
+					<!--/.nav-collapse
+					<nav class="navbar navbar-default" role="navigation">
+					   <div class="navbar-header">
+						  <button type="button" class="navbar-toggle" data-toggle="collapse" 
+							 data-target="#example-navbar-collapse">
+							 <span class="sr-only">Toggle navigation</span>
+							 <span class="icon-bar"></span>
+							 <span class="icon-bar"></span>
+							 <span class="icon-bar"></span>
+						  </button>
+						  <a class="navbar-brand" href="#">TutorialsPoint</a>
+					   </div>
+					   <div class="collapse navbar-collapse" id="example-navbar-collapse">
+						  <ul class="nav navbar-nav">
+							 <li class="active"><a href="#">iOS</a></li>
+							 <li><a href="#">SVN</a></li>
+							 <li class="dropdown">
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+								   Java <b class="caret"></b>
+								</a>
+								<ul class="dropdown-menu">
+								   <li><a href="#">jmeter</a></li>
+								   <li><a href="#">EJB</a></li>
+								   <li><a href="#">Jasper Report</a></li>
+								   <li class="divider"></li>
+								   <li><a href="#">Separated link</a></li>
+								   <li class="divider"></li>
+								   <li><a href="#">One more separated link</a></li>
+								</ul>
+							 </li>
+						  </ul>
+					   </div>
+					</nav>
+					-->
+
 				</div>
 			</div>
 

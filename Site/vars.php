@@ -1,3 +1,7 @@
 <?php
-	$musicDir = "/home/qreon/music/";
+	$musicDir = "music/";
+
+	//FORMATS ACCEPTÉS :
+	//	- mp3
+	//	- ogg
 ?>
