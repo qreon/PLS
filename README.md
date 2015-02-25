@@ -29,6 +29,8 @@ Used add-ons
 ####Notes
 
 * jQuery was not used that much because I didn't learn how to, so it's a bit of a mix between native JS and jQuery
+* Account creation, playlists and favourites don't work.
+* Sharing almost does.
 
 [bs]: http://getbootstrap.com/
 [jq]: http://jquery.com/
